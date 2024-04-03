@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace sensors_gui.ViewModels;
@@ -12,7 +13,7 @@ public class MainWindowViewModel : ViewModelBase
 
     public MainWindowViewModel()
     {
-        Task.Run(async () =>
+        Task.Run(() =>
         {
             while (true)
             {
@@ -23,13 +24,13 @@ public class MainWindowViewModel : ViewModelBase
                 {
                     if (started)
                     {
-                        proc.BeginOutputReadLine();
                         using (var outputStream = proc.StandardOutput)
                         {
                             var data = outputStream.ReadToEnd();
                             if (data != null)
                             {
                                 _cpuTemp = data;
+                                Console.WriteLine($"[Info] => {CPUTemp}");
                             }
                         }
                     }
@@ -38,7 +39,7 @@ public class MainWindowViewModel : ViewModelBase
                 {
                     Console.WriteLine($"[ERROR] => {ex.Message}");
                 }
-                await Task.Delay(1000);
+                Task.Delay(1000).GetAwaiter().GetResult();
             }
         });
     }
